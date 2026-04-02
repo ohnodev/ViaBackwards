@@ -111,12 +111,10 @@ public final class Protocol26_1To1_21_11 extends BackwardsProtocol<ClientboundPa
         cancelClientbound(ClientboundPackets26_1.LOW_DISK_SPACE_WARNING);
         cancelClientbound(ClientboundPackets26_1.GAME_RULE_VALUES);
         // Temporary compatibility hotfix:
-        // Some 1.21.11 clients disconnect on translated RECIPE_BOOK_ADD payloads.
-        // Dropping this packet avoids the decoder crash while preserving gameplay.
-        cancelClientbound(ClientboundPackets26_1.RECIPE_BOOK_ADD);
-        // Temporary compatibility hotfix:
-        // Some 1.21.11 clients disconnect on translated PLACE_GHOST_RECIPE payloads.
-        cancelClientbound(ClientboundPackets26_1.PLACE_GHOST_RECIPE);
+        // Some 1.21.11 clients disconnect on translated recipe book payloads.
+        // Use replaceClientbound here because these packet types can be pre-registered.
+        replaceClientbound(ClientboundPackets26_1.RECIPE_BOOK_ADD, wrapper -> wrapper.cancel());
+        replaceClientbound(ClientboundPackets26_1.PLACE_GHOST_RECIPE, wrapper -> wrapper.cancel());
 
         registerClientbound(ClientboundPackets26_1.SET_TIME, wrapper -> {
             final long gameTime = wrapper.passthrough(Types.LONG);
